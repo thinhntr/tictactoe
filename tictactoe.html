@@ -3,13 +3,32 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gomoku Game 🌌</title>
-    <!-- <style>
+    <style>
+      * {
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif,
+          "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+          "Noto Color Emoji";
+      }
+
+      .hidden {
+        display: none;
+      }
+
       .flex {
         display: flex;
       }
 
       .flex-col {
         flex-direction: column;
+      }
+
+      .grid {
+        display: grid;
+      }
+
+      .grid-cols-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .items-center {
@@ -20,73 +39,165 @@
         justify-content: center;
       }
 
-      .grid {
-        display: grid;
-      }
-
-      .grid-cols-3 {
-        grid-template-columns: repeat(3, auto);
-      }
-
-      .grid-row-flow {
-        grid-auto-flow: row;
-      }
-
-      .gap-4 {
-        gap: 24px;
-      }
-
-      .bg-teal-400 {
-        background-color: teal;
-      }
-
-      .bg-rose-400 {
-        background-color: rosybrown;
-      }
-
-      .bg-rose-600 {
-        background-color: rosybrown;
-      }
-
-      .bg-blue-400 {
-        background-color: blue;
-      }
-
-      .bg-red-400:hover {
-        background-color: red;
-      }
-
-      .text-white {
-        color: white;
-      }
-
-      .p-8 {
-        padding: 16px;
-      }
-
-      .mx-16 {
-        margin-left: 32px;
-        margin-right: 32px;
-      }
-
-      .my-4 {
-        margin-top: 8px;
-        margin-bottom: 8px;
+      .rounded-md {
+        border-radius: 0.375rem;
       }
 
       .rounded-lg {
-        border-radius: 0.75em;
+        border-radius: 0.5rem;
       }
 
-      .w-32 {
-        width: 64px;
+      .shadow-lg {
+        box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -4px rgb(0 0 0 / 0.1);
       }
 
-      .h-32 {
-        height: 64px;
+      .shadow-inner {
+        box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
       }
-    </style> -->
-    <script src="https://cdn.tailwindcss.com"></script>
+
+      .outline {
+        outline-style: solid;
+      }
+
+      .outline-sky-500 {
+        outline-color: #0ea5e9;
+      }
+
+      .outline-rose-500 {
+        outline-color: #f43f5e;
+      }
+
+      .outline-1 {
+        outline-width: 1px;
+      }
+
+      .outline-offset-2 {
+        outline-offset: 2px;
+      }
+
+      .hover\:outline:hover {
+        outline-style: solid;
+      }
+
+      .hover\:outline-1:hover {
+        outline-width: 1px;
+      }
+
+      .hover\:outline-offset-2:hover {
+        outline-offset: 2px;
+      }
+
+      .hover\:outline-indigo-600:hover {
+        outline-color: #4f46e5;
+      }
+
+      .gap-2 {
+        gap: 0.5rem;
+      }
+
+      .mx-1\.5 {
+        margin-left: 0.375rem;
+        margin-right: 0.375rem;
+      }
+
+      .my-1\.5 {
+        margin-top: 0.375rem;
+        margin-bottom: 0.375rem;
+      }
+      .my-3 {
+        margin-top: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .w-24 {
+        width: 6rem;
+      }
+
+      .w-28 {
+        width: 7rem;
+      }
+
+      .w-44 {
+        width: 11rem;
+      }
+
+      .h-14 {
+        height: 3.5rem;
+      }
+
+      .h-24 {
+        height: 6rem;
+      }
+
+      .bg-slate-100 {
+        background-color: rgb(241 245 249);
+      }
+
+      .bg-blue-500 {
+        background-color: rgb(59 130 246);
+      }
+
+      .hover\:bg-red-500:hover {
+        background-color: rgb(239 68 68);
+      }
+
+      .bg-gradient-to-t {
+        background-image: linear-gradient(to top, var(--tw-gradient-stops));
+      }
+
+      .from-rose-600 {
+        --tw-gradient-from: #e11d48;
+        --tw-gradient-stops: var(--tw-gradient-from),
+          var(--tw-gradient-to, rgb(225 29 72 / 0));
+      }
+
+      .from-sky-600 {
+        --tw-gradient-from: #0284c7;
+        --tw-gradient-stops: var(--tw-gradient-from),
+          var(--tw-gradient-to, rgb(2 132 199 / 0));
+      }
+
+      .from-indigo-600 {
+        --tw-gradient-from: #4f46e5;
+        --tw-gradient-stops: var(--tw-gradient-from),
+          var(--tw-gradient-to, rgb(79 70 229 / 0));
+      }
+
+      .to-rose-400 {
+        --tw-gradient-to: #fb7185;
+      }
+
+      .to-sky-400 {
+        --tw-gradient-to: #38bdf8;
+      }
+
+      .to-violet-400 {
+        --tw-gradient-to: #a78bfa;
+      }
+
+      .text-white {
+        color: rgb(255 255 255);
+      }
+
+      .text-emerald-500 {
+        color: rgb(16 185 129);
+      }
+
+      .text-xl {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+      }
+
+      .text-6xl {
+        font-size: 3.75rem;
+        line-height: 1;
+      }
+
+      .font-bold {
+        font-weight: bold;
+      }
+    </style>
     <script>
       function setText(elementID, text) {
         const element = document.getElementById(elementID);
@@ -109,7 +220,12 @@
           this.updateUI = updateUI;
           if (updateUI) {
             const statusBadge = document.getElementById("status");
-            if (statusBadge) statusBadge.classList.add("hidden");
+            if (statusBadge) {
+              statusBadge.classList.add("hidden");
+              statusBadge.classList.remove("flex");
+              statusBadge.classList.remove("items-center");
+              statusBadge.classList.remove("justify-center");
+            }
             for (let i = 0; i < 3; ++i)
               for (let j = 0; j < 3; ++j) setText("c" + (i * 3 + j), "");
           }
@@ -195,6 +311,9 @@
           if (this.updateUI) {
             const statusBadge = setText("status", result);
             statusBadge.classList.remove("hidden");
+            statusBadge.classList.add("flex");
+            statusBadge.classList.add("items-center");
+            statusBadge.classList.add("justify-center");
           }
         }
 
@@ -340,17 +459,17 @@
       const cellCallbacks = app.cellCallbacks;
     </script>
   </head>
-  <body class="flex flex-col items-center bg-slate-100">
-    <div id="board" class="my-3 grid grid-cols-3 grid-flow-row gap-2"></div>
+  <body class="flex flex-col items-center bg-slate-100 text-white">
+    <div id="board" class="my-3 grid grid-cols-3 gap-2"></div>
     <div
       id="status"
-      class="my-1.5 w-44 h-14 flex items-center justify-center text-emerald-500 text-xl rounded-md outline outline-1 outline-emerald-500 hidden"
+      class="hidden my-1.5 w-44 h-14 text-emerald-500 text-xl rounded-md outline outline-1 outline-emerald-500"
     >
       X's turn
     </div>
     <div
       onclick="app.updateCallbacks()"
-      class="my-1.5 w-44 h-14 flex items-center justify-center text-white text-xl rounded-md bg-gradient-to-t from-indigo-600 to-violet-400 shadow-inner active:outline hover: outline-offset-2 hover:outline-1 hover:outline-indigo-600"
+      class="my-1.5 w-44 h-14 flex items-center justify-center text-xl rounded-md bg-gradient-to-t from-indigo-600 to-violet-400 shadow-inner hover:outline hover:outline-offset-2 hover:outline-1 hover:outline-indigo-600"
     >
       New game
     </div>
@@ -358,14 +477,14 @@
       <div
         id="easy-btn"
         onclick="app.easyMode = true"
-        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-sky-600 to-sky-400 text-white hover:text-white"
+        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-sky-600 to-sky-400"
       >
         Easy
       </div>
       <div
         id="impossible-btn"
         onclick="app.easyMode = false"
-        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-rose-600 to-rose-400 text-white hover:text-white"
+        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-rose-600 to-rose-400"
       >
         Impossible
       </div>
@@ -374,14 +493,14 @@
       <div
         id="x-btn"
         onclick="app.chooseX = true"
-        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-sky-600 to-sky-400 text-white hover:text-white"
+        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-sky-600 to-sky-400"
       >
         X
       </div>
       <div
         id="o-btn"
         onclick="app.chooseX = false"
-        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-rose-600 to-rose-400 text-white hover:text-white"
+        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-rose-600 to-rose-400"
       >
         O
       </div>
@@ -394,7 +513,7 @@
         cell.setAttribute("id", "c" + i);
         cell.setAttribute(
           "class",
-          "text-white text-6xl font-bold flex items-center justify-center w-24 h-24 rounded-lg shadow-lg bg-blue-500 hover:bg-red-500"
+          " text-6xl font-bold flex items-center justify-center w-24 h-24 rounded-lg shadow-lg bg-blue-500 hover:bg-red-500"
         );
         cell.setAttribute("onclick", `cellCallbacks[${i}]()`);
         board.appendChild(cell);
@@ -409,22 +528,22 @@
         if (isEnabled) {
           enabledBtn.classList.add("outline");
           enabledBtn.classList.add("outline-offset-2");
-          enabledBtn.classList.add("outline-2");
+          enabledBtn.classList.add("outline-1");
           enabledBtn.classList.add("outline-sky-500");
 
           disableBtn.classList.remove("outline");
           disableBtn.classList.remove("outline-offset-2");
-          disableBtn.classList.remove("outline-2");
+          disableBtn.classList.remove("outline-1");
           disableBtn.classList.remove("outline-rose-500");
         } else {
           enabledBtn.classList.remove("outline");
           enabledBtn.classList.remove("outline-offset-2");
-          enabledBtn.classList.remove("outline-2");
+          enabledBtn.classList.remove("outline-1");
           enabledBtn.classList.remove("outline-sky-500");
 
           disableBtn.classList.add("outline");
           disableBtn.classList.add("outline-offset-2");
-          disableBtn.classList.add("outline-2");
+          disableBtn.classList.add("outline-1");
           disableBtn.classList.add("outline-rose-500");
         }
       }
