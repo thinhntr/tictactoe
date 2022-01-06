@@ -1,0 +1,436 @@
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gomoku Game 🌌</title>
+    <!-- <style>
+      .flex {
+        display: flex;
+      }
+
+      .flex-col {
+        flex-direction: column;
+      }
+
+      .items-center {
+        align-items: center;
+      }
+
+      .justify-center {
+        justify-content: center;
+      }
+
+      .grid {
+        display: grid;
+      }
+
+      .grid-cols-3 {
+        grid-template-columns: repeat(3, auto);
+      }
+
+      .grid-row-flow {
+        grid-auto-flow: row;
+      }
+
+      .gap-4 {
+        gap: 24px;
+      }
+
+      .bg-teal-400 {
+        background-color: teal;
+      }
+
+      .bg-rose-400 {
+        background-color: rosybrown;
+      }
+
+      .bg-rose-600 {
+        background-color: rosybrown;
+      }
+
+      .bg-blue-400 {
+        background-color: blue;
+      }
+
+      .bg-red-400:hover {
+        background-color: red;
+      }
+
+      .text-white {
+        color: white;
+      }
+
+      .p-8 {
+        padding: 16px;
+      }
+
+      .mx-16 {
+        margin-left: 32px;
+        margin-right: 32px;
+      }
+
+      .my-4 {
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+
+      .rounded-lg {
+        border-radius: 0.75em;
+      }
+
+      .w-32 {
+        width: 64px;
+      }
+
+      .h-32 {
+        height: 64px;
+      }
+    </style> -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      function setText(elementID, text) {
+        const element = document.getElementById(elementID);
+        if (!element) return;
+        element.innerHTML = text;
+        return element;
+      }
+
+      class TicTacToe {
+        #states;
+
+        constructor(updateUI = true) {
+          this.board = Array(3)
+            .fill()
+            .map(() => Array(3).fill(0));
+
+          this.isXTurn = true;
+          this.#states = { unfinished: 0, draw: 1, finished: 2 };
+          this._gameState = 0;
+          this.updateUI = updateUI;
+          if (updateUI) {
+            const statusBadge = document.getElementById("status");
+            if (statusBadge) statusBadge.classList.add("hidden");
+            for (let i = 0; i < 3; ++i)
+              for (let j = 0; j < 3; ++j) setText("c" + (i * 3 + j), "");
+          }
+        }
+
+        clone() {
+          const clone = new TicTacToe(false);
+          clone.isXTurn = this.isXTurn;
+          clone.board = JSON.parse(JSON.stringify(this.board));
+          clone._gameState = this._gameState;
+          return clone;
+        }
+
+        set gameState(name) {
+          this._gameState = this.#states[name];
+        }
+
+        get currentID() {
+          return this.isXTurn ? "X" : "O";
+        }
+
+        get isDraw() {
+          return this._gameState === 1;
+        }
+
+        get isFinished() {
+          return !!this._gameState;
+        }
+
+        reset() {
+          this.board.map((row) => row.fill(0));
+          this.isXTurn = true;
+          this.gameState = "unfinished";
+        }
+
+        checkWin() {
+          let count1 = 0;
+          let count2 = 0;
+          let count3 = 0;
+
+          // check rows and columns
+          for (let i = 0; i < 3; ++i) {
+            count1 = 0;
+            count2 = 0;
+            for (let j = 0; j < 3; ++j) {
+              count1 += this.board[i][j] === this.currentID;
+              count2 += this.board[j][i] === this.currentID;
+              count3 += this.board[i][j] !== 0;
+            }
+            if (count1 > 2 || count2 > 2) {
+              this.gameState = "finished";
+              break;
+            }
+            if (this.isFinished) break;
+          }
+
+          // check draw
+          if (count3 > 8 && !this.isFinished) {
+            this.gameState = "draw";
+          }
+
+          // check diagonal
+          count1 = 0;
+          count2 = 0;
+          for (let i = 0; i < 3; ++i) {
+            count1 += this.board[i][i] === this.currentID;
+            count2 += this.board[i][2 - i] === this.currentID;
+          }
+          if (count1 > 2 || count2 > 2) {
+            this.gameState = "finished";
+          }
+
+          // switch turn
+          if (!this.isFinished) {
+            this.isXTurn = !this.isXTurn;
+          }
+
+          // show result
+          if (!this.isFinished) return;
+          const result = this.isDraw
+            ? "Draw"
+            : `The winner is ${this.currentID}`;
+          if (this.updateUI) {
+            const statusBadge = setText("status", result);
+            statusBadge.classList.remove("hidden");
+          }
+        }
+
+        checkState(i, j) {
+          return (
+            0 <= i &&
+            i <= 3 &&
+            0 <= j &&
+            j <= 3 &&
+            !this.isFinished &&
+            this.board[i][j] === 0
+          );
+        }
+
+        placePawn(i, j) {
+          if (!this.checkState(i, j)) return false;
+
+          if (this.updateUI) setText("c" + (i * 3 + j), this.currentID);
+          this.board[i][j] = this.currentID;
+          this.checkWin();
+          return true;
+        }
+      }
+
+      class TTTBot {
+        constructor(botID, gomoku, maxDepth = 3, cell = null, depth = 0) {
+          this.botID = botID;
+          this.gomoku = gomoku.clone();
+          this.gomoku.updateUI = false;
+          this.cell = cell;
+          if (cell) this.gomoku.placePawn(cell[0], cell[1]);
+          this.depth = depth;
+          this.maxDepth = maxDepth;
+        }
+
+        get score() {
+          const isHumanTurn = this.gomoku.currentID !== this.botID;
+          if (this.gomoku.isDraw || this.depth === this.maxDepth) return 0;
+
+          if (this.gomoku.isFinished)
+            return (isHumanTurn ? -1 : 1) / this.depth;
+
+          const scores = this.nextStates.map((it) => it.score);
+          return isHumanTurn ? Math.min(...scores) : Math.max(...scores);
+        }
+
+        get emptyCells() {
+          const cells = [];
+          const nrows = this.gomoku.board.length;
+          const ncols = this.gomoku.board[0].length;
+
+          for (let i = 0; i < nrows; ++i) {
+            for (let j = 0; j < ncols; ++j) {
+              if (this.gomoku.board[i][j] !== 0) continue;
+              cells.push([i, j]);
+            }
+          }
+          return cells;
+        }
+
+        get nextStates() {
+          const states = [];
+          for (const cell of this.emptyCells) {
+            const state = new TTTBot(
+              this.botID,
+              this.gomoku,
+              this.maxDepth,
+              cell,
+              this.depth + 1
+            );
+            states.push(state);
+          }
+          return states;
+        }
+
+        get nextCell() {
+          const states = [...this.nextStates];
+          const maxScore = Math.max(...states.map((it) => it.score));
+          const bestStates = states.filter((it) => it.score >= maxScore);
+          return bestStates[Math.floor(Math.random() * bestStates.length)].cell;
+        }
+      }
+
+      class App {
+        #chooseX;
+        #easyMode;
+
+        constructor() {
+          this.#chooseX = true;
+          this.#easyMode = true;
+          this.cellCallbacks = Array(3 * 3).fill();
+        }
+
+        get chooseX() {
+          return this.#chooseX;
+        }
+
+        get easyMode() {
+          return this.#easyMode;
+        }
+
+        set chooseX(isEnabled) {
+          this.#chooseX = isEnabled;
+          switchOutline(xBtn, oBtn, isEnabled);
+          this.updateCallbacks();
+        }
+
+        set easyMode(isEnabled) {
+          this.#easyMode = isEnabled;
+          switchOutline(easyBtn, impossibleBtn, isEnabled);
+          this.updateCallbacks();
+        }
+
+        updateCallbacks() {
+          const game = new TicTacToe();
+
+          if (!this.#chooseX) {
+            const [botI, botJ] = new TTTBot(game.currentID, game, 1).nextCell;
+            game.placePawn(botI, botJ);
+          }
+
+          for (let id = 0; id < 3 * 3; ++id) {
+            const [i, j] = [Math.floor(id / 3), id % 3];
+
+            const callback = () => {
+              const canContinue = game.placePawn(i, j);
+
+              if (!canContinue || game.isFinished) return;
+
+              const botDepth = this.easyMode ? 3 : 7;
+              const [botI, botJ] = new TTTBot(game.currentID, game, botDepth)
+                .nextCell;
+              game.placePawn(botI, botJ);
+            };
+
+            this.cellCallbacks[id] = callback;
+          }
+        }
+      }
+
+      const app = new App();
+      app.updateCallbacks();
+      const cellCallbacks = app.cellCallbacks;
+    </script>
+  </head>
+  <body class="flex flex-col items-center bg-slate-100">
+    <div id="board" class="my-3 grid grid-cols-3 grid-flow-row gap-2"></div>
+    <div
+      id="status"
+      class="my-1.5 w-44 h-14 flex items-center justify-center text-emerald-500 text-xl rounded-md outline outline-1 outline-emerald-500 hidden"
+    >
+      X's turn
+    </div>
+    <div
+      onclick="app.updateCallbacks()"
+      class="my-1.5 w-44 h-14 flex items-center justify-center text-white text-xl rounded-md bg-gradient-to-t from-indigo-600 to-violet-400 shadow-inner active:outline hover: outline-offset-2 hover:outline-1 hover:outline-indigo-600"
+    >
+      New game
+    </div>
+    <div class="my-1.5 flex text-xl">
+      <div
+        id="easy-btn"
+        onclick="app.easyMode = true"
+        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-sky-600 to-sky-400 text-white hover:text-white"
+      >
+        Easy
+      </div>
+      <div
+        id="impossible-btn"
+        onclick="app.easyMode = false"
+        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-rose-600 to-rose-400 text-white hover:text-white"
+      >
+        Impossible
+      </div>
+    </div>
+    <div class="my-1.5 flex text-xl">
+      <div
+        id="x-btn"
+        onclick="app.chooseX = true"
+        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-sky-600 to-sky-400 text-white hover:text-white"
+      >
+        X
+      </div>
+      <div
+        id="o-btn"
+        onclick="app.chooseX = false"
+        class="mx-1.5 w-28 h-14 rounded-md flex items-center justify-center rounded-md bg-gradient-to-t from-rose-600 to-rose-400 text-white hover:text-white"
+      >
+        O
+      </div>
+    </div>
+
+    <script>
+      const board = document.getElementById("board");
+      for (let i = 0; i < 9; ++i) {
+        const cell = document.createElement("div");
+        cell.setAttribute("id", "c" + i);
+        cell.setAttribute(
+          "class",
+          "text-white text-6xl font-bold flex items-center justify-center w-24 h-24 rounded-lg shadow-lg bg-blue-500 hover:bg-red-500"
+        );
+        cell.setAttribute("onclick", `cellCallbacks[${i}]()`);
+        board.appendChild(cell);
+      }
+
+      const xBtn = document.getElementById("x-btn");
+      const oBtn = document.getElementById("o-btn");
+      const easyBtn = document.getElementById("easy-btn");
+      const impossibleBtn = document.getElementById("impossible-btn");
+
+      function switchOutline(enabledBtn, disableBtn, isEnabled) {
+        if (isEnabled) {
+          enabledBtn.classList.add("outline");
+          enabledBtn.classList.add("outline-offset-2");
+          enabledBtn.classList.add("outline-2");
+          enabledBtn.classList.add("outline-sky-500");
+
+          disableBtn.classList.remove("outline");
+          disableBtn.classList.remove("outline-offset-2");
+          disableBtn.classList.remove("outline-2");
+          disableBtn.classList.remove("outline-rose-500");
+        } else {
+          enabledBtn.classList.remove("outline");
+          enabledBtn.classList.remove("outline-offset-2");
+          enabledBtn.classList.remove("outline-2");
+          enabledBtn.classList.remove("outline-sky-500");
+
+          disableBtn.classList.add("outline");
+          disableBtn.classList.add("outline-offset-2");
+          disableBtn.classList.add("outline-2");
+          disableBtn.classList.add("outline-rose-500");
+        }
+      }
+
+      switchOutline(xBtn, oBtn, app.chooseX);
+      switchOutline(easyBtn, impossibleBtn, app.easyMode);
+    </script>
+  </body>
+</html>
